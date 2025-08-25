@@ -12,90 +12,86 @@
   },
   "validators": [
     {
-      "title": "placeholder.placeholder.mint",
-      "redeemer": {
-        "title": "_redeemer",
-        "schema": {
-          "$ref": "#/definitions/Data"
-        }
-      },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
-    },
-    {
-      "title": "placeholder.placeholder.spend",
+      "title": "crowdfunding.crowdfunding.spend",
       "datum": {
-        "title": "_datum",
+        "title": "datum",
         "schema": {
-          "$ref": "#/definitions/Data"
+          "$ref": "#/definitions/crowdfunding~1Datum"
         }
       },
       "redeemer": {
-        "title": "_redeemer",
+        "title": "redeemer",
         "schema": {
-          "$ref": "#/definitions/Data"
+          "$ref": "#/definitions/crowdfunding~1Redeemer"
         }
       },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
+      "compiledCode": "59010101010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748008c01cdd500144c8cc8a60022646644b30013004300d3754013159800980218069baa00589919194c004dd69809800cdd69809980a000cdd71809801cdd718098012444494460260026024002601c6ea8c040c038dd5002c5900c4528a0183758601c0026eb0c038c03cc03c004c02cdd50024c028dd50034c03400d2225980098020014566002601c6ea802600716403d15980099b874800800a2b3001300e37540130038b201e8b20184030300b300c001370e900018041baa0028b200c180380098019baa0078a4d13656400401",
+      "hash": "cb95415b16e412fb0212fcd4debf6233bb52ceb8629ea8951b79aee2"
     },
     {
-      "title": "placeholder.placeholder.withdraw",
-      "redeemer": {
-        "title": "_redeemer",
-        "schema": {
-          "$ref": "#/definitions/Data"
-        }
-      },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
-    },
-    {
-      "title": "placeholder.placeholder.publish",
-      "redeemer": {
-        "title": "_redeemer",
-        "schema": {
-          "$ref": "#/definitions/Data"
-        }
-      },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
-    },
-    {
-      "title": "placeholder.placeholder.vote",
-      "redeemer": {
-        "title": "_redeemer",
-        "schema": {
-          "$ref": "#/definitions/Data"
-        }
-      },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
-    },
-    {
-      "title": "placeholder.placeholder.propose",
-      "redeemer": {
-        "title": "_redeemer",
-        "schema": {
-          "$ref": "#/definitions/Data"
-        }
-      },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
-    },
-    {
-      "title": "placeholder.placeholder.else",
+      "title": "crowdfunding.crowdfunding.else",
       "redeemer": {
         "schema": {}
       },
-      "compiledCode": "58d001010029800aba2aba1aab9eaab9dab9a48888966002646465300130053754003300700398038012444b30013370e9000001c4c98dd7180518049baa0048acc004cdc3a400400713233226300b001300b300c0013009375400915980099b874801000e264c601460126ea80122b30013370e9003001c4c8cc898dd698058009805980600098049baa0048acc004cdc3a40100071326300a3009375400913233226375a60160026016601800260126ea8011007200e401c80390070c018c01c004c018004c00cdd5003452689b2b20021",
-      "hash": "f2388d136606a27c4a531d0040c3e12e07eb95cd5011793c160707dc"
+      "compiledCode": "59010101010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748008c01cdd500144c8cc8a60022646644b30013004300d3754013159800980218069baa00589919194c004dd69809800cdd69809980a000cdd71809801cdd718098012444494460260026024002601c6ea8c040c038dd5002c5900c4528a0183758601c0026eb0c038c03cc03c004c02cdd50024c028dd50034c03400d2225980098020014566002601c6ea802600716403d15980099b874800800a2b3001300e37540130038b201e8b20184030300b300c001370e900018041baa0028b200c180380098019baa0078a4d13656400401",
+      "hash": "cb95415b16e412fb0212fcd4debf6233bb52ceb8629ea8951b79aee2"
     }
   ],
   "definitions": {
-    "Data": {
-      "title": "Data",
-      "description": "Any Plutus data."
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "aiken/crypto/VerificationKeyHash": {
+      "title": "VerificationKeyHash",
+      "dataType": "bytes"
+    },
+    "crowdfunding/Datum": {
+      "title": "Datum",
+      "anyOf": [
+        {
+          "title": "Datum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "admin_pkh",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "authen_token",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "current_fund",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "target_fund",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "crowdfunding/Redeemer": {
+      "title": "Redeemer",
+      "anyOf": [
+        {
+          "title": "UserContribute",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "AdminClaim",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
     }
   }
 }
