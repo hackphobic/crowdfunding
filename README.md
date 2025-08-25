@@ -36,7 +36,7 @@ ADMIN_MNEMONIC: Your admin mnemonic phrase
 
 USER_MNEMONIC: Your user mnemonic phrase
 
-### Initialize
+### 2.1. Initialize
 
 Check script 1-initialize.js, you can change your targetFund if needed:
 
@@ -93,7 +93,7 @@ targetFund:  100
 All transactions of Contract Address: ...
 ```
 
-### User contribute
+### 2.2. User contribute
 
 Check script 2-user-contribute.js, change your amount:
 
@@ -173,7 +173,7 @@ If you try to change the targetFund in new datum, after running script, you will
 Trace [Contract Error]: target fund must be unchanged Trace Validator returned false
 ```
 
-### Admin claim
+### 2.3. Admin claim
 
 Run script 3-admin-claim.js:
 
