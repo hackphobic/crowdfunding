@@ -14,17 +14,20 @@ dotenv.config();
       process.env.NETWORK
     );
 
+    // Read validator from plutus.json
     const spendValidator = {
       type: "PlutusV3",
       script: contract.validators[0].compiledCode,
     };
 
+    // Get contract address
     const contractAddress = validatorToAddress(
       process.env.NETWORK,
       spendValidator
     );
     console.log("Contract Address: ", contractAddress);
 
+    // Get utxo to build transaction
     const spendingUtxo = await lucid.utxosAt(contractAddress);
     console.log("spendingUtxo: ", spendingUtxo);
 
@@ -36,7 +39,8 @@ dotenv.config();
     const senderAddress = await lucid.wallet().address();
     console.log("senderAddress: ", senderAddress);
 
-    // 0: UserContribute, 1: AdminClaim
+    // Redeemer Actions:
+    // 0 - UserContribute, 1 - AdminClaim
     const redeemer = Data.to(new Constr(1, []));
     console.log("redeemer: ", redeemer);
 
