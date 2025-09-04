@@ -4,22 +4,27 @@ use cardano/address.{Script}
 use cardano/assets.{PolicyId, lovelace_of, quantity_of}
 use cardano/transaction.{InlineDatum, Input, OutputReference, Transaction}
 
-const stt_asset_name: ByteArray = "STT"
+// Name of the NFT which will be holding the ADA & CF tokens of this contract
+const stt_asset_name: ByteArray = config.stt_asset_name
 
-const cf_asset_name: ByteArray = "RWA"
+// Asset_name of the CF token
+const cf_asset_name: ByteArray = config.cf_asset_name
 
-const price_per_token: Int = 3
+// Price per CF token
+const price_per_token: Int = config.price_per_token
 
-const target_fund: Int = 1_000_000
+// Target in Lovelace
+const target_fund: Int = config.target_fund
 
-const admin_pkh: VerificationKeyHash = ""
+// crowdfund owner address
+const admin_pkh: VerificationKeyHash = config.admin_pkh
 
 pub type Redeemer {
   UserContribute
   AdminClaim
 }
 
-validator crowdfunding(utxo_ref: OutputReference) {
+validator crowdfunding(config.utxo_ref: OutputReference) {
   spend(
     _datum: Option<Void>,
     redeemer: Redeemer,
@@ -33,16 +38,9 @@ validator crowdfunding(utxo_ref: OutputReference) {
     expect Some(spending_utxo) =
       inputs |> list.find(fn(input) { input.output_reference == utxo })
 
+    // get contract own hash
     expect Script(own_script_hash) =
       spending_utxo.output.address.payment_credential
-    // Retrieve the STT output
-    expect Some(stt_output) =
-      outputs
-        |> list.find(
-            fn(output) {
-              quantity_of(output.value, own_script_hash, stt_asset_name) > 0
-            },
-          )
 
     when redeemer is {
       UserContribute -> {
@@ -50,6 +48,14 @@ validator crowdfunding(utxo_ref: OutputReference) {
         // TOTAL_PRICE = TOKEN_PRICE * PURCHASED_CF_AMOUNT
         // OUTPUT_STT_ADA == (INPUT_STT_ADA + TOTAL_PRICE)
 
+        // Retrieve the STT output
+        expect Some(stt_output) =
+          outputs
+            |> list.find(
+                fn(output) {
+                  quantity_of(output.value, own_script_hash, stt_asset_name) > 0
+                },
+              )
         // Retrieve the STT input
         expect Some(stt_input) =
           inputs
@@ -96,7 +102,16 @@ validator crowdfunding(utxo_ref: OutputReference) {
       }
 
       AdminClaim -> {
-        let output_stt_ada: Int = lovelace_of(stt_output.value)
+        // Retrieve the STT input
+        expect Some(stt_input) =
+          inputs
+            |> list.find(
+                fn(input) {
+                  let value = input.output.value
+                  quantity_of(value, own_script_hash, stt_asset_name) > 0
+                },
+              )
+        let output_stt_ada: Int = lovelace_of(stt_input.value)
         // Only claim when current_fund = target_fund
         let is_claimable = output_stt_ada >= target_fund
 
