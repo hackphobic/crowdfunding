@@ -111,9 +111,9 @@ validator crowdfunding(config.utxo_ref: OutputReference) {
                   quantity_of(value, own_script_hash, stt_asset_name) > 0
                 },
               )
-        let output_stt_ada: Int = lovelace_of(stt_input.value)
+        let input_stt_ada: Int = lovelace_of(stt_input.value)
         // Only claim when current_fund = target_fund
-        let is_claimable = output_stt_ada >= target_fund
+        let is_claimable = input_stt_ada >= target_fund
 
         // Must be signed by admin_pkh
         let is_admin = list.has(self.extra_signatories, admin_pkh)
