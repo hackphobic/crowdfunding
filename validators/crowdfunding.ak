@@ -1,63 +1,100 @@
-use cardano/assets.{lovelace_of}
-use cardano/transaction.{Transaction, OutputReference, InlineDatum}
-use aiken/crypto.{VerificationKeyHash}
 use aiken/collection/list
+use aiken/crypto.{VerificationKeyHash}
+use cardano/address.{Script}
+use cardano/assets.{PolicyId, lovelace_of, quantity_of}
+use cardano/transaction.{InlineDatum, Input, OutputReference, Transaction}
 
-pub type Datum {
-  admin_pkh: VerificationKeyHash,
-  current_fund: Int, // In ADA
-  target_fund: Int // In ADA
-}
+const stt_asset_name: ByteArray = "STT"
+
+const cf_asset_name: ByteArray = "RWA"
+
+const price_per_token: Int = 3
+
+const target_fund: Int = 1_000_000
+
+const admin_pkh: VerificationKeyHash = ""
 
 pub type Redeemer {
   UserContribute
   AdminClaim
 }
 
-validator crowdfunding {
-  spend(datum: Option<Datum>, redeemer: Redeemer, utxo: OutputReference, self: Transaction) {
-    // Extract all information in datum
-    expect Some(Datum { admin_pkh, current_fund, target_fund }) = datum
-
+validator crowdfunding(utxo_ref: OutputReference) {
+  spend(
+    _datum: Option<Void>,
+    redeemer: Redeemer,
+    utxo: OutputReference,
+    self: Transaction,
+  ) {
     // Extract all related information in transaction
-    let Transaction { inputs, outputs, ..} = self
+    let Transaction { inputs, outputs, .. } = self
 
     // Get spending utxo
-    expect Some(spending_utxo) = inputs |> list.find(fn(input) { input.output_reference == utxo })
+    expect Some(spending_utxo) =
+      inputs |> list.find(fn(input) { input.output_reference == utxo })
+
+    expect Script(own_script_hash) =
+      spending_utxo.output.address.payment_credential
+    // Retrieve the STT output
+    expect Some(stt_output) =
+      outputs
+        |> list.find(
+            fn(output) {
+              quantity_of(output.value, own_script_hash, stt_asset_name) > 0
+            },
+          )
 
     when redeemer is {
       UserContribute -> {
-        // Get continuing output which is sent to CrowdFunding smart contract address
-        expect Some(output_to_contract) = outputs |> list.find(fn(output) { output.address == spending_utxo.output.address })
+        // BUG: ASSUMES ONE OUPUT IS BEING SPENT TO THIS VALIDATOR
+        // BUG: DATUM IS VULNERABLE TO BE SPOOFED
+        // FIX: USE STT TO PREVENT DATUM SPOOF ATTACKS
+        // FIX: USE STT TO RETRIEVE & FORWARD THE CROWDFUND INFO & ASSETS
+        // FIX: MAKE SURE THE STT IS SPENT BACK TO THIS VALIDATOR
 
-        // Extract new datum in continuing output
-        expect InlineDatum(new_data) = output_to_contract.datum
-        expect new_datum: Datum = new_data
+        // PURCHASED_CF_AMOUNT = INPUT_STT_CF - OUTPUT_STT_CF 
+        // TOTAL_PRICE = TOKEN_PRICE * PURCHASED_CF_AMOUNT
+        // OUTPUT_STT_ADA == (INPUT_STT_ADA + TOTAL_PRICE)
 
-        // New current fund = previous current fund + contributed amount
-        let is_new_current_fund_correct =
-          (new_datum.current_fund - current_fund) * 1_000_000 ==
-            lovelace_of(output_to_contract.value) - lovelace_of(spending_utxo.output.value)
+        // Retrieve the STT input
+        expect Some(stt_input) =
+          inputs
+            |> list.find(
+                fn(input) {
+                  let value = input.output.value
+                  quantity_of(value, own_script_hash, stt_asset_name) > 0
+                },
+              )
+        // extract the needed info from the STT
+        let input_stt_ada: Int = lovelace_of(stt_input.output.value)
+        let output_stt_ada: Int = lovelace_of(stt_output.value)
+        let input_stt_cf: Int =
+          quantity_of(stt_input.output.value, own_script_hash, cf_asset_name)
+        let output_stt_cf: Int =
+          quantity_of(stt_output.value, own_script_hash, cf_asset_name)
 
-        // New current fund less than or equal target fund
-        let is_new_current_fund_less_than_or_equal_target_fund = new_datum.current_fund <= target_fund
+        // calculate the needed values:
+        let purchased_cf_amount: Int = input_stt_cf - output_stt_cf
+        let total_price: Int = purchased_cf_amount * price_per_token
+        let expected_paid_ada: Int = input_stt_ada + total_price
+        let paid_amount_is_correct = output_stt_ada == expected_paid_ada
 
-        // Other fields in datum must be unchanged (admin_pkh, target_fund)
-        let is_admin_pkh_unchanged = admin_pkh == new_datum.admin_pkh
-        let is_target_fund_unchanged = target_fund == new_datum.target_fund
+        let is_new_current_fund_less_than_or_equal_target_fund =
+          output_stt_ada <= target_fund
+
+        // The STT NFT must be forwarded to this validator
+        let stt_is_forwarded_to_this_validator =
+          stt_input.output.address == stt_output.address
 
         // Check all conditions and add trace messages
-        if (!is_new_current_fund_correct) {
-          trace @"[Contract Error]: new current fund must be correct"
+        if !stt_is_forwarded_to_this_validator {
+          trace @"[Contract Error]: the STT NFT must be forwarded to the contract"
           False
-        } else if (!is_new_current_fund_less_than_or_equal_target_fund) {
+        } else if !paid_amount_is_correct {
+          trace @"[Contract Error]: paid amount is incorrect amount"
+          False
+        } else if !is_new_current_fund_less_than_or_equal_target_fund {
           trace @"[Contract Error]: new current fund must be less than or equal target fund"
-          False
-        } else if (!is_admin_pkh_unchanged) {
-          trace @"[Contract Error]: admin public key hash must be unchanged"
-          False
-        } else if (!is_target_fund_unchanged) {
-          trace @"[Contract Error]: target fund must be unchanged"
           False
         } else {
           True
@@ -65,17 +102,18 @@ validator crowdfunding {
       }
 
       AdminClaim -> {
+        let output_stt_ada: Int = lovelace_of(stt_output.value)
         // Only claim when current_fund = target_fund
-        let is_claimable = current_fund == target_fund
+        let is_claimable = output_stt_ada >= target_fund
 
         // Must be signed by admin_pkh
         let is_admin = list.has(self.extra_signatories, admin_pkh)
 
         // Check all conditions and add trace messages
-        if (!is_claimable) {
+        if !is_claimable {
           trace @"[Contract Error]: current fund is not equal to target fund"
           False
-        } else if (!is_admin) {
+        } else if !is_admin {
           trace @"[Contract Error]: you're not the admin"
           False
         } else {
@@ -83,6 +121,24 @@ validator crowdfunding {
         }
       }
     }
+  }
+
+  mint(_redeemer: Data, policy_id: PolicyId, self: Transaction) {
+    // Used when a new crowdfund is deployed
+    // Purpose: to double check the minted amounts of the STT NFT & CF tokens
+    let Transaction { inputs, outputs, mint, .. } = self
+
+    let is_output_consumed =
+      list.any(inputs, fn(input) { input.output_reference == utxo_ref })
+
+    let stt_quantity = quantity_of(mint, policy_id, stt_asset_name)
+    let one_stt_minted = stt_quantity == 1
+
+    let cf_token_quantity = quantity_of(mint, policy_id, cf_asset_name)
+    let correct_target_minted =
+      cf_token_quantity * price_per_token == target_fund
+
+    is_output_consumed? && one_stt_minted? && correct_target_minted?
   }
 
   else(_) {
