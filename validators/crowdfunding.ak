@@ -19,12 +19,15 @@ const target_fund: Int = config.target_fund
 // crowdfund owner address
 const admin_pkh: VerificationKeyHash = config.admin_pkh
 
+// This UTXO needs to be consumed when deploying a new crowdfund
+const utxo_ref: OutputReference = config.utxo_ref
+
 pub type Redeemer {
   UserContribute
   AdminClaim
 }
 
-validator crowdfunding(config.utxo_ref: OutputReference) {
+validator crowdfunding(utxo_ref: OutputReference) {
   spend(
     _datum: Option<Void>,
     redeemer: Redeemer,
